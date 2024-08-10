@@ -48,11 +48,11 @@ Usage: Tiled2Bin <filename> [options]
 | `-norotate`         | Disable tile rotation (used with `-slice`).                                                                                                         | `false`                |
 | `-insertblanktile`  | Insert a blank tile (used with `-slice`).                                                                                                           | `true`                 |
 
-**Note:** Tile2Bin does not support layers or base64 encoded tmx files currently.
+**Note:** Tiled2Bin does not support layers or base64 encoded tmx files currently.
 
 ## Additional Notes
 
-- **Tile2Bin does not support layers or base64 encoded `.tmx` files currently.**
+- **Tiled2Bin does not support layers or base64 encoded `.tmx` files currently.**
 - The filename provided to Tiled2Bin can also use wildcards, such as `*.tmx` allowing for batch processing of all matching files.
 - The `z80` folder contains the necessary decompressor (in assembly) for handling `zx0` compressed files.
 
