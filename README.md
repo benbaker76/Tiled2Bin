@@ -43,7 +43,7 @@ Usage: Tiled2Bin <filename> [options]
 | `-rle-ext=<ext>`    | Sets the file extension for the `rle` compressed output.                                                                                            | `.bin.rle`             |
 | `-q`                | Quick non-optimal compression.                                                                                                                      | `false`                |
 | `-b`                | Compress backwards.                                                                                                                                 | `false`                |
-| `-noheader`         | Suppresses the output of the header.                                                                                                                | `true`                |
+| `-header`            | Add a map file header.                                                                                                                | `false`                |
 | `-split`            | Split the tile ID data and attribute data into separate blocks (must be used with `-512`).                                                          | `false`                |
 | `-slice`            | Convert .png to .tmx using TileMap slicer.                                                                                                          | -                      |
 | `-tilesize=<n>`     | Set the width and height of each tile to `<n>` (used with `-slice`).                                                                                | `8`                    |
@@ -53,6 +53,25 @@ Usage: Tiled2Bin <filename> [options]
 | `-insertblanktile`  | Insert a blank tile (used with `-slice`).                                                                                                           | `true`                 |
 
 **Note:** Tiled2Bin does not support layers or base64 encoded tmx files currently.
+
+### Header
+
+Below is a description of the header structure:
+
+| Field           | Description                                                                                                      | Size          |
+|-----------------|------------------------------------------------------------------------------------------------------------------|---------------|
+| **File Identifier** | The file starts with a 4-byte identifier, `map\0`, represented as an array of characters.                        | 4 bytes       |
+| **Version**     | A single byte representing the version of the file format.                                                       | 1 byte        |
+| **Number of Layers** | A single byte indicating the number of tile layers in the file.                                                 | 1 byte        |
+| **Layer ID**    | A single byte representing the ID of the tile layer.                                                             | 1 byte per layer |
+| **Tile Set Name** | A 16-byte ASCII-encoded string representing the tile set name, padded with null characters (`'\0'`) if the name is shorter than 16 characters. | 16 bytes per layer |
+| **Layer Attributes** | A single byte representing the attributes of the tile layer.                                                    | 1 byte per layer |
+| **Layer Width** | A 2-byte unsigned short representing the width of the tile layer in tiles.                                        | 2 bytes per layer |
+| **Layer Height** | A 2-byte unsigned short representing the height of the tile layer in tiles.                                        | 2 bytes per layer |
+| **Tile Width**  | A single byte representing the width of each tile in pixels.                                                     | 1 byte per layer |
+| **Tile Height** | A single byte representing the height of each tile in pixels.                                                    | 1 byte per layer |
+| **Data Length** | A 2-byte unsigned short representing the length of the tile data in bytes.                                       | 2 bytes per layer |
+| **Tile Data**   | A variable-length array of bytes representing the actual tile data for the layer.                                | Variable      |
 
 ## Additional Notes
 

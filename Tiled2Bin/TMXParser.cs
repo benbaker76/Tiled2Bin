@@ -17,7 +17,7 @@ namespace Tiled2Bin
         public bool QuickMode = false;
         public bool BackwardsMode = false;
         public bool CompressRLE = false;
-        public bool NoHeader = true;
+        public bool Header = false;
         public bool Split = false;
         public string MapExtension = ".bin"; // .map
         public string Zx0Extension = ".bin.zx0";
@@ -212,7 +212,7 @@ namespace Tiled2Bin
                     Console.WriteLine($"WARNING: {Path.GetFileName(fileName)} - Tile values greater than 511 found.");
             }
 
-            if (options.NoHeader)
+            if (options.Header)
             {
                 for (int i = 0; i < fileArray.Length; i++)
                 {

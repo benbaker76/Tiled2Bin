@@ -74,9 +74,9 @@ namespace Tiled2Bin
                         options.CompressRLE = true;
                     }
 
-                    if (arg == "-noheader")
+                    if (arg == "-header")
                     {
-                        options.NoHeader = true;
+                        options.Header = true;
                     }
 
                     if (arg == "-split")
@@ -217,7 +217,7 @@ namespace Tiled2Bin
             Console.WriteLine("-rle-ext=<ext>      Set the file extension for the rle compressed output. Default is .bin.rle.");
             Console.WriteLine("-q                  Quick non-optimal compression (zx0 only). Default is false.");
             Console.WriteLine("-b                  Compress backwards (zx0 only). Default is false.");
-            Console.WriteLine("-noheader           Don't output the header. Default is true.");
+            Console.WriteLine("-header             Add a map file header. Default is false.");
             Console.WriteLine("-split              Split the tile id data and attribute data into separate blocks. Default is false. (must be used with -512).");
             Console.WriteLine("-slice              Convert .png to .tmx using TileMap slicer.");
             Console.WriteLine("-tilesize=<n>       Set the width and height of each tile to <n>. Default is 8 (used with -slice).");
