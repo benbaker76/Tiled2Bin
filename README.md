@@ -20,7 +20,7 @@ This command will output a file named `Level01.bin`, containing the bytes that i
 Tiled2Bin Level01.tmx -512 -zx0
 ```
 
-This command will output a file named `Level01.map.zx0`, containing a compressed version of the binary file. The compression uses `zx0`, and a decompressor (in assembly) is included with this archive (see the `z80` folder). This will significantly reduce the size of the map data.
+This command will output a file named `Level01.bin.zx0`, containing a compressed version of the binary file. The compression uses `zx0`, and a decompressor (in assembly) is included with this archive (see the `z80` folder). This will significantly reduce the size of the map data.
 
 ## Arguments
 
