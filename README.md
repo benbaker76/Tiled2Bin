@@ -43,9 +43,9 @@ Usage: Tiled2Bin <filename> [options]
 | `-split`            | Split the tile ID data and attribute data into separate blocks (must be used with `-512`).                                                          | `false`                |
 | `-slice`            | Convert .png to .tmx using TileMap slicer.                                                                                                          | -                      |
 | `-tilesize=<n>`     | Set the width and height of each tile to `<n>` (used with `-slice`).                                                                                | `8`                    |
-| `-norepeat`         | Disable tile repetition (used with `-slice`).                                                                                                       | `true`                 |
-| `-nomirror`         | Disable tile mirroring (used with `-slice`).                                                                                                        | `true`                 |
-| `-norotate`         | Disable tile rotation (used with `-slice`).                                                                                                         | `false`                |
+| `-norepeat`         | No repeating tiles (used with `-slice`).                                                                                                       | `true`                 |
+| `-nomirror`         | No mirrored tiles (used with `-slice`).                                                                                                        | `true`                 |
+| `-norotate`         | No rotating tiles (used with `-slice`).                                                                                                         | `false`                |
 | `-insertblanktile`  | Insert a blank tile (used with `-slice`).                                                                                                           | `true`                 |
 
 **Note:** Tiled2Bin does not support layers or base64 encoded tmx files currently.
