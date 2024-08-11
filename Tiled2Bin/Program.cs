@@ -212,6 +212,9 @@ namespace Tiled2Bin
             Console.WriteLine("                    default, Tiled will use -1.");
             Console.WriteLine("-zx0                Enable zx0 compression. Default is false.");
             Console.WriteLine("-rle                Enable rle compression. Default is false.");
+            Console.WriteLine("-map-ext=<ext>      Set the file extension for the map output. Default is .bin.");
+            Console.WriteLine("-zx0-ext=<ext>      Set the file extension for the zx0 compressed output. Default is .bin.zx0.");
+            Console.WriteLine("-rle-ext=<ext>      Set the file extension for the rle compressed output. Default is .bin.rle.");
             Console.WriteLine("-q                  Quick non-optimal compression (zx0 only). Default is false.");
             Console.WriteLine("-b                  Compress backwards (zx0 only). Default is false.");
             Console.WriteLine("-noheader           Don't output the header. Default is true.");
@@ -222,9 +225,6 @@ namespace Tiled2Bin
             Console.WriteLine("-nomirror           No mirrored tiles. Default is true (used with -slice).");
             Console.WriteLine("-norotate           No rotating tiles. Default is false (used with -slice).");
             Console.WriteLine("-insertblanktile    Insert a blank tile. Default is true (used with -slice).");
-            Console.WriteLine("-map-ext=<ext>      Set the file extension for the map output. Default is .bin.");
-            Console.WriteLine("-zx0-ext=<ext>      Set the file extension for the zx0 compressed output. Default is .bin.zx0.");
-            Console.WriteLine("-rle-ext=<ext>      Set the file extension for the rle compressed output. Default is .bin.rle.");
             Console.WriteLine("\nNote: Tile2Bin does not support layers or base64 encoded tmx files currently.");
         }
     }

@@ -36,7 +36,8 @@ Usage: Tiled2Bin <filename> [options]
 | `<filename>`        | The name of the file(s) to process. You can use a specific file name or use wildcards to batch process multiple files (e.g., `*.tmx`).              | -                      |
 | `-512`              | Indicates that the map uses 512 tiles. The default is 256.                                                                                          | `false`                |
 | `-blank=<n>`        | Sets the value of what Tiled uses for empty space. If you have empty untiled space, it is advised to set this value.                                | `-1`                   |
-| `-zx0`              | Enables `zx0` compression for the resulting binary file. The compressed file will have a `.zx0` extension.                                          | `false`                |
+| `-zx0`              | Enables `zx0` compression for the resulting binary file.                                                                                            | `false`                |
+| `-rle`              | Enables `rle` compression for the resulting binary file.                                                                                            | `false`                |
 | `-map-ext=<ext>`    | Sets the file extension for the map output.                                                                                                         | `.bin`                 |
 | `-zx0-ext=<ext>`    | Sets the file extension for the `zx0` compressed output.                                                                                            | `.bin.zx0`             |
 | `-rle-ext=<ext>`    | Sets the file extension for the `rle` compressed output.                                                                                            | `.bin.rle`             |
