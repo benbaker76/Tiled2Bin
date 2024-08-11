@@ -37,15 +37,18 @@ Usage: Tiled2Bin <filename> [options]
 | `-512`              | Indicates that the map uses 512 tiles. The default is 256.                                                                                          | `false`                |
 | `-blank=<n>`        | Sets the value of what Tiled uses for empty space. If you have empty untiled space, it is advised to set this value.                                | `-1`                   |
 | `-zx0`              | Enables `zx0` compression for the resulting binary file. The compressed file will have a `.zx0` extension.                                          | `false`                |
+| `-map-ext=<ext>`    | Sets the file extension for the map output.                                                                                                         | `.bin`                 |
+| `-zx0-ext=<ext>`    | Sets the file extension for the `zx0` compressed output.                                                                                            | `.bin.zx0`             |
+| `-rle-ext=<ext>`    | Sets the file extension for the `rle` compressed output.                                                                                            | `.bin.rle`             |
 | `-q`                | Quick non-optimal compression.                                                                                                                      | `false`                |
 | `-b`                | Compress backwards.                                                                                                                                 | `false`                |
-| `-noheader`         | Suppresses the output of the header.                                                                                                                | `false`                |
+| `-noheader`         | Suppresses the output of the header.                                                                                                                | `true`                |
 | `-split`            | Split the tile ID data and attribute data into separate blocks (must be used with `-512`).                                                          | `false`                |
 | `-slice`            | Convert .png to .tmx using TileMap slicer.                                                                                                          | -                      |
 | `-tilesize=<n>`     | Set the width and height of each tile to `<n>` (used with `-slice`).                                                                                | `8`                    |
-| `-norepeat`         | No repeating tiles (used with `-slice`).                                                                                                       | `true`                 |
-| `-nomirror`         | No mirrored tiles (used with `-slice`).                                                                                                        | `true`                 |
-| `-norotate`         | No rotating tiles (used with `-slice`).                                                                                                         | `false`                |
+| `-norepeat`         | No repeating tiles (used with `-slice`).                                                                                                            | `true`                 |
+| `-nomirror`         | No mirrored tiles (used with `-slice`).                                                                                                             | `true`                 |
+| `-norotate`         | No rotating tiles (used with `-slice`).                                                                                                             | `false`                |
 | `-insertblanktile`  | Insert a blank tile (used with `-slice`).                                                                                                           | `true`                 |
 
 **Note:** Tiled2Bin does not support layers or base64 encoded tmx files currently.

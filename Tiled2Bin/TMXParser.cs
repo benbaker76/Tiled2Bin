@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Xml;
 using Tiled2Bin;
 using Baker76.Compression;
+using System.Linq;
 
 namespace Tiled2Bin
 {
@@ -16,8 +17,11 @@ namespace Tiled2Bin
         public bool QuickMode = false;
         public bool BackwardsMode = false;
         public bool CompressRLE = false;
-        public bool NoHeader = false;
+        public bool NoHeader = true;
         public bool Split = false;
+        public string MapExtension = ".bin"; // .map
+        public string Zx0Extension = ".bin.zx0";
+        public string RleExtension = ".bin.rle";
     }
 
     [Flags]
@@ -54,8 +58,6 @@ namespace Tiled2Bin
                     Console.WriteLine("ERROR: File Not Found");
                     return;
                 }
-
-                string binaryFilename = Path.GetFileNameWithoutExtension(fileName) + ".map";
 
                 XmlDocument xmlDocument = new XmlDocument();
                 xmlDocument.Load(fileName);
@@ -214,17 +216,30 @@ namespace Tiled2Bin
             {
                 for (int i = 0; i < fileArray.Length; i++)
                 {
-                    string binaryFilename = Path.GetFileNameWithoutExtension(fileArray[i]) + ".map";
+                    string binaryFilename = GetBinaryFileName(fileArray[i], options);
 
                     File.WriteAllBytes(binaryFilename, byteList[i]);
                 }
             }
             else
             {
-                string binaryFilename = Path.GetFileNameWithoutExtension(fileArray[0]) + ".map";
+                string binaryFilename = GetBinaryFileName(fileArray[0], options);
 
                 TileMap.WriteBin(binaryFilename, tileLayers, byteList, 0);
             }
+        }
+
+        public static string GetBinaryFileName(string fileName, TileMapOptions options)
+        {
+            string binaryFilename = Path.ChangeExtension(fileName, options.MapExtension);
+
+            if (options.CompressRLE)
+                binaryFilename = Path.ChangeExtension(fileName, options.RleExtension);
+
+            if (options.CompressZx0)
+                binaryFilename = Path.ChangeExtension(fileName, options.Zx0Extension);
+
+            return binaryFilename;
         }
     }
 }
