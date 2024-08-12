@@ -221,10 +221,10 @@ namespace Tiled2Bin
             Console.WriteLine("-split              Split the tile id data and attribute data into separate blocks. Default is false. (must be used with -512).");
             Console.WriteLine("-slice              Convert .png to .tmx using TileMap slicer.");
             Console.WriteLine("-tilesize=<n>       Set the width and height of each tile to <n>. Default is 8 (used with -slice).");
-            Console.WriteLine("-norepeat           No repeating tiles. Default is true (used with -slice).");
-            Console.WriteLine("-nomirror           No mirrored tiles. Default is true (used with -slice).");
+            Console.WriteLine("-norepeat           No repeating tiles. Default is false (used with -slice).");
+            Console.WriteLine("-nomirror           No mirrored tiles. Default is false (used with -slice).");
             Console.WriteLine("-norotate           No rotating tiles. Default is false (used with -slice).");
-            Console.WriteLine("-insertblanktile    Insert a blank tile. Default is true (used with -slice).");
+            Console.WriteLine("-insertblanktile    Insert a blank tile. Default is false (used with -slice).");
             Console.WriteLine("\nNote: Tile2Bin does not support layers or base64 encoded tmx files currently.");
         }
     }

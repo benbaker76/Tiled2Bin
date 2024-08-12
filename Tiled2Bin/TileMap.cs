@@ -17,10 +17,10 @@ namespace Tiled2Bin
         public int TileWidth = 8;
         public int TileHeight = 8;
         public int TileSetWidth = 256;
-        public bool NoRepeat = true;
-        public bool NoMirror = true;
+        public bool NoRepeat = false;
+        public bool NoMirror = false;
         public bool NoRotate = false;
-        public bool InsertBlankTile = true;
+        public bool InsertBlankTile = false;
         public int PaletteSlot = 0;
         public int ColorCount = 256;
     }
