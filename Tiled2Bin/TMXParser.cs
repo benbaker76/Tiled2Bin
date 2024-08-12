@@ -59,44 +59,67 @@ namespace Tiled2Bin
                     return;
                 }
 
-                XmlDocument xmlDocument = new XmlDocument();
-                xmlDocument.Load(fileName);
-
-                XmlNodeList tilesetNode = xmlDocument.GetElementsByTagName("tileset");
-
-                int firstGid = int.Parse(tilesetNode[0].Attributes["firstgid"].Value);
+                string extension = Path.GetExtension(fileName).ToLower();
                 string tileSet = "";
-
-                if (tilesetNode[0].Attributes["source"] != null)
-                {
-                    tileSet = tilesetNode[0].Attributes["source"].Value;
-                }
-                else
-                {
-                    XmlNode imageNode = tilesetNode[0].ChildNodes[0];
-
-                    tileSet = imageNode.Attributes["source"].Value;
-                }
-
-                XmlNodeList mapNode = xmlDocument.GetElementsByTagName("map");
-
-                int tileWidth = int.Parse(mapNode[0].Attributes["tilewidth"].Value);
-                int tileHeight = int.Parse(mapNode[0].Attributes["tileheight"].Value);
-
-                XmlNodeList layerNode = xmlDocument.GetElementsByTagName("layer");
-
-                string layerID = layerNode[0].Attributes["id"].Value;
-                int width = int.Parse(layerNode[0].Attributes["width"].Value);
-                int height = int.Parse(layerNode[0].Attributes["height"].Value);
+                int firstGid = 1;
+                string layerId = "1";
+                int tileWidth = 8, tileHeight = 8;
+                int width = 0, height = 0;
                 bool over256 = false;
                 bool over512 = false;
+                long[] tileData;
 
-                XmlNode dataNode = layerNode[0].ChildNodes[0];
+                if (extension == ".tmx")
+                {
+                    XmlDocument xmlDocument = new XmlDocument();
+                    xmlDocument.Load(fileName);
 
-                string encoding = dataNode.Attributes["encoding"].Value.ToLower();
-                string dataText = dataNode.InnerText;
+                    XmlNodeList tilesetNode = xmlDocument.GetElementsByTagName("tileset");
 
-                long[] tileData = Array.ConvertAll(dataText.Split(','), long.Parse);
+                    firstGid = int.Parse(tilesetNode[0].Attributes["firstgid"].Value);
+
+                    if (tilesetNode[0].Attributes["source"] != null)
+                    {
+                        tileSet = tilesetNode[0].Attributes["source"].Value;
+                    }
+                    else
+                    {
+                        XmlNode imageNode = tilesetNode[0].ChildNodes[0];
+
+                        tileSet = imageNode.Attributes["source"].Value;
+                    }
+
+                    XmlNodeList mapNode = xmlDocument.GetElementsByTagName("map");
+
+                    tileWidth = int.Parse(mapNode[0].Attributes["tilewidth"].Value);
+                    tileHeight = int.Parse(mapNode[0].Attributes["tileheight"].Value);
+
+                    XmlNodeList layerNode = xmlDocument.GetElementsByTagName("layer");
+
+                    layerId = layerNode[0].Attributes["id"].Value;
+                    width = int.Parse(layerNode[0].Attributes["width"].Value);
+                    height = int.Parse(layerNode[0].Attributes["height"].Value);
+
+                    XmlNode dataNode = layerNode[0].ChildNodes[0];
+
+                    string encoding = dataNode.Attributes["encoding"].Value.ToLower();
+                    string dataText = dataNode.InnerText;
+
+                    tileData = Array.ConvertAll(dataText.Split(','), long.Parse);
+                }
+                else if (extension == ".csv")
+                {
+                    string[] linesArray = File.ReadAllLines(fileName);
+                    linesArray = linesArray.Where(line => !string.IsNullOrWhiteSpace(line)).ToArray();
+
+                    width = linesArray[0].Split(",").Length;
+                    height = linesArray.Length;
+
+                    string dataString = String.Join(",", linesArray);
+                    tileData = Array.ConvertAll(dataString.Split(','), long.Parse);
+                }
+                else
+                    continue;
 
                 List<byte> tileBytes = new List<byte>();
                 List<byte> attribBytes = new List<byte>();
@@ -191,7 +214,7 @@ namespace Tiled2Bin
 
                 TileLayer tileLayer = new TileLayer
                 {
-                    Id = byte.Parse(layerID),
+                    Id = byte.Parse(layerId),
                     TileSet = Path.GetFileNameWithoutExtension(tileSet),
                     Attributes = layerAttributes,
                     Width = (short)width,
@@ -214,18 +237,18 @@ namespace Tiled2Bin
 
             if (options.Header)
             {
+                string binaryFilename = GetBinaryFileName(fileArray[0], options);
+
+                TileMap.WriteBin(binaryFilename, tileLayers, byteList, 0);
+            }
+            else
+            {
                 for (int i = 0; i < fileArray.Length; i++)
                 {
                     string binaryFilename = GetBinaryFileName(fileArray[i], options);
 
                     File.WriteAllBytes(binaryFilename, byteList[i]);
                 }
-            }
-            else
-            {
-                string binaryFilename = GetBinaryFileName(fileArray[0], options);
-
-                TileMap.WriteBin(binaryFilename, tileLayers, byteList, 0);
             }
         }
 
