@@ -330,7 +330,7 @@ namespace Tiled2Bin
                     else
                         writer.WriteLine();
 
-                    if (i % srcImage.Width == srcImage.Width - 1)
+                    if (i % tileCols == tileCols - 1)
                         writer.WriteLine();
                 }
 
