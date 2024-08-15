@@ -23,6 +23,7 @@ namespace Tiled2Bin
         public bool InsertBlankTile = false;
         public int PaletteSlot = 0;
         public int ColorCount = 256;
+        public int ClearMap = -1;
     }
 
     public class TiledNode
@@ -323,7 +324,7 @@ namespace Tiled2Bin
 
                 for (int i = 0; i < tiledNodes.Count; i++)
                 {
-                    writer.Write(tiledNodes[i].ToLong().ToString());
+                    writer.Write(options.ClearMap == -1 ? tiledNodes[i].ToLong() : options.ClearMap);
 
                     if (i < tiledNodes.Count - 1)
                         writer.Write(",");

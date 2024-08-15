@@ -59,6 +59,11 @@ namespace Tiled2Bin
                         options.Extended512 = true;
                     }
 
+                    if (arg == "-rle")
+                    {
+                        options.CompressRLE = true;
+                    }
+
                     if (arg == "-q")
                     {
                         options.QuickMode = true;
@@ -69,9 +74,22 @@ namespace Tiled2Bin
                         options.BackwardsMode = true;
                     }
 
-                    if (arg == "-rle")
+                    if (arg.StartsWith("-map-ext="))
                     {
-                        options.CompressRLE = true;
+                        string[] vals = arg.Split('=');
+                        options.MapExtension = vals[1];
+                    }
+
+                    if (arg.StartsWith("-zx0-ext="))
+                    {
+                        string[] vals = arg.Split('=');
+                        options.Zx0Extension = vals[1];
+                    }
+
+                    if (arg.StartsWith("-rle-ext="))
+                    {
+                        string[] vals = arg.Split('=');
+                        options.RleExtension = vals[1];
                     }
 
                     if (arg == "-header")
@@ -125,22 +143,19 @@ namespace Tiled2Bin
                         sliceOptions.InsertBlankTile = true;
                     }
 
-                    if (arg.StartsWith("-map-ext="))
+                    if (arg.StartsWith("-clearmap="))
                     {
                         string[] vals = arg.Split('=');
-                        options.MapExtension = vals[1];
-                    }
 
-                    if (arg.StartsWith("-zx0-ext="))
-                    {
-                        string[] vals = arg.Split('=');
-                        options.Zx0Extension = vals[1];
-                    }
-
-                    if (arg.StartsWith("-rle-ext="))
-                    {
-                        string[] vals = arg.Split('=');
-                        options.RleExtension = vals[1];
+                        if (Int32.TryParse(vals[1], out int clearMap))
+                        {
+                            sliceOptions.ClearMap = clearMap;
+                        }
+                        else
+                        {
+                            Console.WriteLine("ERROR: Invalid value " + args[i]);
+                            return;
+                        }
                     }
                 }
                 else
@@ -207,14 +222,14 @@ namespace Tiled2Bin
             Console.WriteLine("<filename>          Name of the file(s) to process.");
             Console.WriteLine("                    Use the implicit name for a single file, or use");
             Console.WriteLine("                    wildcards to batch process. ie. *.png");
+            Console.WriteLine("-map-ext=<ext>      Set the file extension for the map output. Default is .bin.");
+            Console.WriteLine("-zx0-ext=<ext>      Set the file extension for the zx0 compressed output. Default is .bin.zx0.");
+            Console.WriteLine("-rle-ext=<ext>      Set the file extension for the rle compressed output. Default is .bin.rle.");
             Console.WriteLine("-512                The map uses 512 tiles. Default is 256.");
             Console.WriteLine("-blank=<n>          Set the value of what Tiled uses for empty space. By");
             Console.WriteLine("                    default, Tiled will use -1.");
             Console.WriteLine("-zx0                Enable zx0 compression. Default is false.");
             Console.WriteLine("-rle                Enable rle compression. Default is false.");
-            Console.WriteLine("-map-ext=<ext>      Set the file extension for the map output. Default is .bin.");
-            Console.WriteLine("-zx0-ext=<ext>      Set the file extension for the zx0 compressed output. Default is .bin.zx0.");
-            Console.WriteLine("-rle-ext=<ext>      Set the file extension for the rle compressed output. Default is .bin.rle.");
             Console.WriteLine("-q                  Quick non-optimal compression (zx0 only). Default is false.");
             Console.WriteLine("-b                  Compress backwards (zx0 only). Default is false.");
             Console.WriteLine("-header             Add a map file header. Default is false.");
@@ -225,6 +240,7 @@ namespace Tiled2Bin
             Console.WriteLine("-nomirror           No mirrored tiles. Default is false (used with -slice).");
             Console.WriteLine("-norotate           No rotating tiles. Default is false (used with -slice).");
             Console.WriteLine("-insertblanktile    Insert a blank tile. Default is false (used with -slice).");
+            Console.WriteLine("-clearmap=<n>       Clear the map data with the specified tile id (used with -slice).");
             Console.WriteLine("\nNote: Tile2Bin does not support layers or base64 encoded tmx files currently.");
         }
     }

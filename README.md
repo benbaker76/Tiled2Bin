@@ -34,13 +34,13 @@ Usage: Tiled2Bin <filename> [options]
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
 | `-h` or `-?`        | Display basic help.                                                                                                                                 | -                      |
 | `<filename>`        | The name of the file(s) to process. You can use a specific file name or use wildcards to batch process multiple files (e.g., `*.tmx`).              | -                      |
+| `-map-ext=<ext>`    | Sets the file extension for the map output.                                                                                                         | `.bin`                 |
+| `-zx0-ext=<ext>`    | Sets the file extension for the `zx0` compressed output.                                                                                            | `.bin.zx0`             |
+| `-rle-ext=<ext>`    | Sets the file extension for the `rle` compressed output.                                                                                            | `.bin.rle`             |
 | `-512`              | Indicates that the map uses 512 tiles. The default is 256.                                                                                          | `false`                |
 | `-blank=<n>`        | Sets the value of what Tiled uses for empty space. If you have empty untiled space, it is advised to set this value.                                | `-1`                   |
 | `-zx0`              | Enables `zx0` compression for the resulting binary file.                                                                                            | `false`                |
 | `-rle`              | Enables `rle` compression for the resulting binary file.                                                                                            | `false`                |
-| `-map-ext=<ext>`    | Sets the file extension for the map output.                                                                                                         | `.bin`                 |
-| `-zx0-ext=<ext>`    | Sets the file extension for the `zx0` compressed output.                                                                                            | `.bin.zx0`             |
-| `-rle-ext=<ext>`    | Sets the file extension for the `rle` compressed output.                                                                                            | `.bin.rle`             |
 | `-q`                | Quick non-optimal compression.                                                                                                                      | `false`                |
 | `-b`                | Compress backwards.                                                                                                                                 | `false`                |
 | `-header`            | Add a map file header.                                                                                                                | `false`                |
@@ -51,6 +51,7 @@ Usage: Tiled2Bin <filename> [options]
 | `-nomirror`         | No mirrored tiles (used with `-slice`).                                                                                                             | `false`                 |
 | `-norotate`         | No rotating tiles (used with `-slice`).                                                                                                             | `false`                |
 | `-insertblanktile`  | Insert a blank tile (used with `-slice`).                                                                                                           | `false`                 |
+| `-clearmap=<n>`     | Clear the map data with the specified tile id (used with `-slice`).                                                                                 | -                       |
 
 **Note:** Tiled2Bin does not support layers or base64 encoded tmx files currently.
 
