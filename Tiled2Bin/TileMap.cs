@@ -54,23 +54,20 @@ namespace Tiled2Bin
         Split = (1 << 6),
     };
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct TileHeader
+    public class TileHeader
     {
         public uint Header;
         public byte Version;
         public byte NumLayers;
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-    public struct TileLayer
+    public class TileLayer
     {
         public byte Id;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 16)]
         public string TileSet;
         public TileLayerAttributes Attributes;
-        public short Width;
-        public short Height;
+        public ushort Width;
+        public ushort Height;
         public byte TileWidth;
         public byte TileHeight;
         public ushort DataLength;
@@ -78,33 +75,59 @@ namespace Tiled2Bin
 
     public class TileMap
     {
+        public const int TILE_HEADER_SIZE = 6;
+        public const int TILE_LAYER_SIZE = 26;
+        public const int TILE_HEADER_MAGIC = 0x70616D;
+
         public string Name;
-        public short MapWidth;
-        public short MapHeight;
+        public ushort MapWidth;
+        public ushort MapHeight;
         public byte TileWidth;
         public byte TileHeight;
+        public TileLayerAttributes Attributes;
         public ushort[] TileData;
 
-        public TileMap(string name, short mapWidth, short mapHeight, byte tileWidth, byte tileHeight, ushort[] tileData)
+        public TileMap(string name, ushort mapWidth, ushort mapHeight, byte tileWidth, byte tileHeight, TileLayerAttributes attributes, ushort[] tileData)
         {
             Name = name;
             MapWidth = mapWidth;
             MapHeight = mapHeight;
             TileWidth = tileWidth;
             TileHeight = tileHeight;
+            Attributes = attributes;
             TileData = tileData;
+        }
+
+        public static TileMap FromTileLayer(string fileName, TileLayer tileLayer, ushort[] tileData)
+        {
+            string suffix = tileLayer.Id > 1 ? "_" + tileLayer.Id.ToString() : "";
+            string name = Path.GetFileNameWithoutExtension(fileName) + suffix;
+
+            return new TileMap(name, tileLayer.Width, tileLayer.Height, tileLayer.TileWidth, tileLayer.TileHeight, tileLayer.Attributes, tileData);
         }
 
         public static async Task<List<TileMap>> ReadBin(string fileName, Palette palette)
         {
-            int dataOffset = 0;
+            using (FileStream fileStream = new FileStream(fileName, FileMode.Open))
+                return await ReadBin(fileStream, fileName, palette);
+        }
+
+        public static async Task<List<TileMap>> ReadBin(Stream stream, string fileName, Palette palette)
+        {
             List<TileMap> tileMaps = new List<TileMap>();
-            byte[] buffer = File.ReadAllBytes(fileName);
 
-            TileHeader tileHeader = Utility.ToObject<TileHeader>(buffer, 0);
-            dataOffset += Marshal.SizeOf<TileHeader>();
+            // Read TileHeader
+            byte[] headerBuffer = new byte[TILE_HEADER_SIZE];
+            await stream.ReadAsync(headerBuffer, 0, headerBuffer.Length);
 
-            if (tileHeader.Header != 0x70616D)
+            TileHeader tileHeader = new TileHeader
+            {
+                Header = BitConverter.ToUInt32(headerBuffer, 0),
+                Version = headerBuffer[4],
+                NumLayers = headerBuffer[5]
+            };
+
+            if (tileHeader.Header != TILE_HEADER_MAGIC)
             {
                 Console.WriteLine("Invalid Tile Map Header!");
                 return null;
@@ -112,30 +135,60 @@ namespace Tiled2Bin
 
             for (int i = 0; i < tileHeader.NumLayers; i++)
             {
-                TileLayer tileLayer = Utility.ToObject<TileLayer>(buffer, dataOffset);
+                // Read TileLayer
+                byte[] layerBuffer = new byte[TILE_LAYER_SIZE];
+                await stream.ReadAsync(layerBuffer, 0, layerBuffer.Length);
 
-                dataOffset += Marshal.SizeOf<TileLayer>();
+                TileLayer tileLayer = new TileLayer
+                {
+                    Id = layerBuffer[0],
+                    TileSet = System.Text.Encoding.ASCII.GetString(layerBuffer, 1, 16).TrimEnd('\0'),
+                    Attributes = (TileLayerAttributes)layerBuffer[17],
+                    Width = BitConverter.ToUInt16(layerBuffer, 18),
+                    Height = BitConverter.ToUInt16(layerBuffer, 20),
+                    TileWidth = layerBuffer[22],
+                    TileHeight = layerBuffer[23],
+                    DataLength = BitConverter.ToUInt16(layerBuffer, 24)
+                };
 
-                byte[] srcData = new byte[tileLayer.DataLength];
                 byte[] dstData = new byte[tileLayer.Width * tileLayer.Height * 2];
 
-                Array.Copy(buffer, dataOffset, srcData, 0, (int)tileLayer.DataLength);
+                // Read compressed or uncompressed data based on attributes
+                if (tileLayer.Attributes.HasFlag(TileLayerAttributes.CompressedZx0))
+                {
+                    byte[] srcData = new byte[tileLayer.DataLength];
+                    await stream.ReadAsync(srcData, 0, tileLayer.DataLength);
+                    Zx0.Decompress(srcData, ref dstData);
+                }
+                else if (tileLayer.Attributes.HasFlag(TileLayerAttributes.CompressedRLE))
+                {
+                    byte[] srcData = new byte[tileLayer.DataLength];
+                    await stream.ReadAsync(srcData, 0, tileLayer.DataLength);
+                    int length = Rle.Read(srcData, dstData, dstData.Length, 1);
+                }
+                else
+                {
+                    await stream.ReadAsync(dstData, 0, tileLayer.DataLength);
+                }
 
-                Zx0.Decompress(srcData, ref dstData);
+                // Process tile data
+                int halfLength = dstData.Length / 2;
+                ushort[] tileData = new ushort[halfLength];
 
-                ushort[] tileData = new ushort[dstData.Length / 2];
+                if (tileLayer.Attributes.HasFlag(TileLayerAttributes.Split))
+                {
+                    for (int j = 0; j < tileData.Length; j++)
+                        tileData[j] = (ushort)((dstData[tileData.Length + j] << 8) | dstData[j]);
+                }
+                else
+                {
+                    for (int j = 0; j < tileData.Length; j++)
+                        tileData[j] = (ushort)((dstData[j * 2 + 1] << 8) | dstData[j * 2]);
+                }
 
-                for (int j = 0; j < tileData.Length; j++)
-                    tileData[j] = (ushort)((dstData[j * 2 + 1] << 8) | dstData[j * 2]);
-
-                string suffix = tileLayer.Id > 1 ? "_" + tileLayer.Id.ToString() : "";
-                string name = Path.GetFileNameWithoutExtension(fileName) + suffix;
-
-                TileMap tileMap = new TileMap(name, tileLayer.Width, tileLayer.Height, tileLayer.TileWidth, tileLayer.TileHeight, tileData);
-
+                // Create and add TileMap
+                TileMap tileMap = TileMap.FromTileLayer(fileName, tileLayer, tileData);
                 tileMaps.Add(tileMap);
-
-                dataOffset += tileLayer.DataLength;
             }
 
             return tileMaps;
