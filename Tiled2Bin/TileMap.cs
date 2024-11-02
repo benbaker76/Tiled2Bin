@@ -75,9 +75,9 @@ namespace Tiled2Bin
 
     public class TileMap
     {
+        public const uint TILE_HEADER_MAGIC = 0x70616D;
         public const int TILE_HEADER_SIZE = 6;
         public const int TILE_LAYER_SIZE = 26;
-        public const int TILE_HEADER_MAGIC = 0x70616D;
 
         public string Name;
         public ushort MapWidth;
