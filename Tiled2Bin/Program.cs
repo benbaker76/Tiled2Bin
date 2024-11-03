@@ -6,6 +6,8 @@ using System.Xml;
 using System.Runtime.InteropServices.Marshalling;
 using System.Drawing;
 using System.Numerics;
+using Baker76.TileMap;
+using Baker76.Plugin;
 
 namespace Tiled2Bin
 {
@@ -22,9 +24,12 @@ namespace Tiled2Bin
             }
 
             List<string> fileList = new List<string>();
-            TileMapOptions options = new TileMapOptions();
-            TileMapSliceOptions sliceOptions = new TileMapSliceOptions();
+            TileMapOptions tileMapOptions = new TileMapOptions();
+            TileMapSliceOptions tileMapSliceOptions = new TileMapSliceOptions();
             bool sliceMode = false;
+            string mapExtension = ".bin"; // .map
+            string zx0Extension = ".bin.zx0";
+            string rleExtension = ".bin.rle";
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -42,7 +47,7 @@ namespace Tiled2Bin
                     {
                         string[] vals = arg.Split('=');
 
-                        if (!Int32.TryParse(vals[1], out options.BlankTileId))
+                        if (!Int32.TryParse(vals[1], out tileMapOptions.BlankTileId))
                         {
                             Console.WriteLine("ERROR: Invalid value " + args[i]);
                             return;
@@ -51,55 +56,55 @@ namespace Tiled2Bin
 
                     if (arg == "-zx0")
                     {
-                        options.CompressZx0 = true;
+                        tileMapOptions.CompressZx0 = true;
                     }
 
                     else if (arg == "-512")
                     {
-                        options.Extended512 = true;
+                        tileMapOptions.Extended512 = true;
                     }
 
                     if (arg == "-rle")
                     {
-                        options.CompressRLE = true;
+                        tileMapOptions.CompressRLE = true;
                     }
 
                     if (arg == "-q")
                     {
-                        options.QuickMode = true;
+                        tileMapOptions.QuickMode = true;
                     }
 
                     if (arg == "-b")
                     {
-                        options.BackwardsMode = true;
+                        tileMapOptions.BackwardsMode = true;
                     }
 
                     if (arg.StartsWith("-map-ext="))
                     {
                         string[] vals = arg.Split('=');
-                        options.MapExtension = vals[1];
+                        mapExtension = vals[1];
                     }
 
                     if (arg.StartsWith("-zx0-ext="))
                     {
                         string[] vals = arg.Split('=');
-                        options.Zx0Extension = vals[1];
+                        zx0Extension = vals[1];
                     }
 
                     if (arg.StartsWith("-rle-ext="))
                     {
                         string[] vals = arg.Split('=');
-                        options.RleExtension = vals[1];
+                        rleExtension = vals[1];
                     }
 
                     if (arg == "-header")
                     {
-                        options.Header = true;
+                        tileMapOptions.Header = true;
                     }
 
                     if (arg == "-split")
                     {
-                        options.Split = true;
+                        tileMapOptions.Split = true;
                     }
 
                     if (arg == "-slice")
@@ -113,8 +118,8 @@ namespace Tiled2Bin
 
                         if (Int32.TryParse(vals[1], out int tileSize))
                         {
-                            sliceOptions.TileWidth = tileSize;
-                            sliceOptions.TileHeight = tileSize;
+                            tileMapSliceOptions.TileWidth = tileSize;
+                            tileMapSliceOptions.TileHeight = tileSize;
                         }
                         else
                         {
@@ -125,22 +130,22 @@ namespace Tiled2Bin
 
                     if (arg == "-norepeat")
                     {
-                        sliceOptions.NoRepeat = true;
+                        tileMapSliceOptions.NoRepeat = true;
                     }
 
                     if (arg == "-nomirror")
                     {
-                        sliceOptions.NoMirror = true;
+                        tileMapSliceOptions.NoMirror = true;
                     }
 
                     if (arg == "-norotate")
                     {
-                        sliceOptions.NoRotate = true;
+                        tileMapSliceOptions.NoRotate = true;
                     }
 
                     if (arg == "-insertblanktile")
                     {
-                        sliceOptions.InsertBlankTile = true;
+                        tileMapSliceOptions.InsertBlankTile = true;
                     }
 
                     if (arg.StartsWith("-clearmap="))
@@ -149,7 +154,7 @@ namespace Tiled2Bin
 
                         if (Int32.TryParse(vals[1], out int clearMap))
                         {
-                            sliceOptions.ClearMap = clearMap;
+                            tileMapSliceOptions.ClearMap = clearMap;
                         }
                         else
                         {
@@ -178,11 +183,11 @@ namespace Tiled2Bin
                     {
                         string[] fileArray = Directory.GetFiles(@".\", file);
                         foreach (string pngFile in fileArray)
-                            ProcessPngFile(pngFile, sliceOptions);
+                            ProcessPngFile(pngFile, tileMapSliceOptions);
                     }
                     else
                     {
-                        ProcessPngFile(file, sliceOptions);
+                        ProcessPngFile(file, tileMapSliceOptions);
                     }
                 }
             }
@@ -198,19 +203,43 @@ namespace Tiled2Bin
                         return;
                     }
 
-                    TMXParser.ParseFiles(fileArray, options);
+                    fileList.Clear();
+                    fileList.AddRange(fileArray);
                 }
-                else
+
+                List<IFileSource> fileSources = new List<IFileSource>();
+
+                foreach (var file in fileList)
+                    fileSources.Add(new DiskFileSource(file));
+
+                foreach (var file in fileSources)
                 {
-                    TMXParser.ParseFiles(fileList.ToArray(), options);
+                    string fileName = file.Name;
+                    string binaryFilename = GetBinaryFileName(fileName, mapExtension, rleExtension, zx0Extension, tileMapOptions);
+
+                    using (Stream stream = File.Create(binaryFilename))
+                        TileMap.ParseTmx(stream, file, tileMapOptions).Wait();
                 }
             }
+        }
+
+        public static string GetBinaryFileName(string fileName, string mapExtension, string rleExtension, string zx0Extension, TileMapOptions options)
+        {
+            string binaryFilename = Path.ChangeExtension(fileName, mapExtension);
+
+            if (options.CompressRLE)
+                binaryFilename = Path.ChangeExtension(fileName, rleExtension);
+
+            if (options.CompressZx0)
+                binaryFilename = Path.ChangeExtension(fileName, zx0Extension);
+
+            return binaryFilename;
         }
 
         static void ProcessPngFile(string pngFile, TileMapSliceOptions sliceOptions)
         {
             string tmxPath = Path.ChangeExtension(pngFile, ".tmx"); // Output .tmx file
-            TileMap.CreateTiledTmx(pngFile, sliceOptions);
+            TileMap.CreateTileMap(new DiskFileSource(pngFile), sliceOptions, null);
             Console.WriteLine($"Processed {pngFile} to {tmxPath}");
         }
 

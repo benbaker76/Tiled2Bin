@@ -11,6 +11,8 @@
     <ProjectReference Include="..\Baker76.Core\src\Baker76.Compression\Baker76.Compression.csproj" />
     <ProjectReference Include="..\Baker76.Core\src\Baker76.Core\Baker76.Core.csproj" />
     <ProjectReference Include="..\Baker76.Core\src\Baker76.Imaging\Baker76.Imaging.csproj" />
+    <ProjectReference Include="..\Baker76.Core\src\Baker76.Plugin\Baker76.Plugin.csproj" />
+    <ProjectReference Include="..\Baker76.Core\src\Baker76.TileMap\Baker76.TileMap.csproj" />
     <ProjectReference Include="..\Baker76.Core\src\Hjg.Pngcs\Hjg.Pngcs.csproj" />
   </ItemGroup>
 
