@@ -7,7 +7,7 @@ using System.Runtime.InteropServices.Marshalling;
 using System.Drawing;
 using System.Numerics;
 using Baker76.TileMap;
-using Baker76.Plugin;
+using Baker76.Core.IO;
 
 namespace Tiled2Bin
 {

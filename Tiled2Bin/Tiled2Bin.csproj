@@ -1,19 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Baker76.Core\src\Baker76.Compression\Baker76.Compression.csproj" />
-    <ProjectReference Include="..\Baker76.Core\src\Baker76.Core\Baker76.Core.csproj" />
-    <ProjectReference Include="..\Baker76.Core\src\Baker76.Imaging\Baker76.Imaging.csproj" />
-    <ProjectReference Include="..\Baker76.Core\src\Baker76.Plugin\Baker76.Plugin.csproj" />
-    <ProjectReference Include="..\Baker76.Core\src\Baker76.TileMap\Baker76.TileMap.csproj" />
-    <ProjectReference Include="..\Baker76.Core\src\Hjg.Pngcs\Hjg.Pngcs.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="../README.md" Pack="true" PackagePath="\" />
+		<None Include="../LICENSE" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<PackageVersion>1.0.0</PackageVersion>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Baker76.TileMap" Version="1.0.25" />
+	</ItemGroup>
 
 </Project>
