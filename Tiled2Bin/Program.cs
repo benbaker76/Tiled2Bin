@@ -4,10 +4,10 @@ using System.IO;
 using System.Diagnostics;
 using System.Xml;
 using System.Runtime.InteropServices.Marshalling;
-using System.Drawing;
 using System.Numerics;
 using Baker76.TileMap;
 using Baker76.Core.IO;
+using Baker76.Imaging;
 
 namespace Tiled2Bin
 {
@@ -128,6 +128,21 @@ namespace Tiled2Bin
                         }
                     }
 
+                    if (arg.StartsWith("-tilesetwidth="))
+                    {
+                        string[] vals = arg.Split('=');
+
+                        if (Int32.TryParse(vals[1], out int tileSetWidth))
+                        {
+                            tileMapSliceOptions.TileSetWidth = tileSetWidth;
+                        }
+                        else
+                        {
+                            Console.WriteLine("ERROR: Invalid value " + args[i]);
+                            return;
+                        }
+                    }
+
                     if (arg == "-norepeat")
                     {
                         tileMapSliceOptions.NoRepeat = true;
@@ -182,12 +197,13 @@ namespace Tiled2Bin
                     if (file.Contains("*"))
                     {
                         string[] fileArray = Directory.GetFiles(@".\", file);
+
                         foreach (string pngFile in fileArray)
-                            ProcessPngFile(pngFile, tileMapSliceOptions);
+                            TileMap.CreateTiledTmx(pngFile, tileMapSliceOptions);
                     }
                     else
                     {
-                        ProcessPngFile(file, tileMapSliceOptions);
+                        TileMap.CreateTiledTmx(file, tileMapSliceOptions);
                     }
                 }
             }
@@ -236,13 +252,6 @@ namespace Tiled2Bin
             return binaryFilename;
         }
 
-        static void ProcessPngFile(string pngFile, TileMapSliceOptions sliceOptions)
-        {
-            string tmxPath = Path.ChangeExtension(pngFile, ".tmx"); // Output .tmx file
-            TileMap.CreateTileMap(new DiskFileSource(pngFile), sliceOptions, null);
-            Console.WriteLine($"Processed {pngFile} to {tmxPath}");
-        }
-
         static void DisplayHelp()
         {
             Console.WriteLine("Usage: Tiled2Bin <filename> [-512] [-blank=n] [-zx0] [-rle] [-q] [-b] [-noheader] [-split] [-slice] [-tilesize=x] [-norepeat] [-nomirror] [-norotate] [-insertblanktile] [-map-ext=<ext>] [-zx0-ext=<ext>] [-rle-ext=<ext>]\n");
@@ -265,7 +274,8 @@ namespace Tiled2Bin
             Console.WriteLine("-split              Split the tile id data and attribute data into separate blocks. Default is false. (must be used with -512).");
             Console.WriteLine("-slice              Convert .png to .tmx using TileMap slicer.");
             Console.WriteLine("-tilesize=<n>       Set the width and height of each tile to <n>. Default is 8 (used with -slice).");
-            Console.WriteLine("-norepeat           No repeating tiles. Default is false (used with -slice).");
+            Console.WriteLine("-tilesetwidth=<n>   Set the width of the tileset in tiles. Default is 256 (used with -slice).");
+            Console.WriteLine("-norepeat           No repeating tiles. Default is true (used with -slice).");
             Console.WriteLine("-nomirror           No mirrored tiles. Default is false (used with -slice).");
             Console.WriteLine("-norotate           No rotating tiles. Default is false (used with -slice).");
             Console.WriteLine("-insertblanktile    Insert a blank tile. Default is false (used with -slice).");

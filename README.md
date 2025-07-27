@@ -43,12 +43,13 @@ Usage: Tiled2Bin <filename> [options]
 | `-rle`              | Enables `rle` compression for the resulting binary file.                                                                                            | `false`                |
 | `-q`                | Quick non-optimal compression.                                                                                                                      | `false`                |
 | `-b`                | Compress backwards.                                                                                                                                 | `false`                |
-| `-header`            | Add a map file header.                                                                                                                | `false`                |
+| `-header`           | Add a map file header.                                                                                                                | `false`                |
 | `-split`            | Split the tile ID data and attribute data into separate blocks (must be used with `-512`).                                                          | `false`                |
 | `-slice`            | Convert .png to .tmx using TileMap slicer.                                                                                                          | -                      |
 | `-tilesize=<n>`     | Set the width and height of each tile to `<n>` (used with `-slice`).                                                                                | `8`                    |
-| `-norepeat`         | No repeating tiles (used with `-slice`).                                                                                                            | `false`                 |
-| `-nomirror`         | No mirrored tiles (used with `-slice`).                                                                                                             | `false`                 |
+| `-tilesetwidth=<n>` | Set the width of the tileset in tiles (used with `-slice`).                                                                                         | `256`                  |
+| `-norepeat`         | No repeating tiles (used with `-slice`).                                                                                                            | `true`                 |
+| `-nomirror`         | No mirrored tiles (used with `-slice`).                                                                                                             | `false`                |
 | `-norotate`         | No rotating tiles (used with `-slice`).                                                                                                             | `false`                |
 | `-insertblanktile`  | Insert a blank tile (used with `-slice`).                                                                                                           | `false`                 |
 | `-clearmap=<n>`     | Clear the map data with the specified tile id (used with `-slice`).                                                                                 | -                       |
